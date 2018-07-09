@@ -1,21 +1,19 @@
+#######################################################################################################################
+'''
+    Description
+    ___________
+    version: 1.07.09
+    another: Jirat Nakarit
+    Postscript: 1. This code for Real Sense D415.
+                2. Now you can not use record and read at the same time.
+'''
+#######################################################################################################################
+
 import numpy as np
 import cv2
 import pyrealsense2 as rs
 
 class myCamera:
-
-    def __init__(self, X=424, Y=270, FRAMERATE=30):
-
-        # Configure depth and color stream
-        self.pipeline = rs.pipeline()
-        self.config = rs.config()
-
-        self.config.enable_stream(rs.stream.depth, X, Y, rs.format.z16, FRAMERATE)
-        self.config.enable_stream(rs.stream.color, X, Y ,rs.format.bgr8, FRAMERATE)
-
-    def start(self):
-        # Start streaming
-        self.pipeline.start(self.config)
 
     def initial(self):
         # Wait for a coherent pair of frames: depth and color
@@ -44,6 +42,95 @@ class myCamera:
         else:
             return False
 
+    def aspect_ratio(self, X):
+        dict = {
+            424:240,
+            640:480,
+            1280:720
+        }
+        return dict[X]
 
 
+class Camera(myCamera):
+
+    def __init__(self, X=640, FRAMERATE=30):
+
+        Y = self.aspect_ratio(X)
+
+        # Configure depth and color stream
+        self.pipeline = rs.pipeline()
+        self.config = rs.config()
+
+        self.config.enable_stream(rs.stream.depth, X, Y, rs.format.z16, FRAMERATE)
+        self.config.enable_stream(rs.stream.color, X, Y, rs.format.bgr8, FRAMERATE)
+
+        # Start streaming
+        self.pipeline.start(self.config)
+
+class Record(myCamera):
+
+    def __init__(self, FILE, X=640, FRAMERATE=30):
+
+        Y = self.aspect_ratio(X)
+
+        # Configure depth and color stream
+        self.pipeline = rs.pipeline()
+        self.config = rs.config()
+
+        self.config.enable_stream(rs.stream.depth, X, Y, rs.format.z16, FRAMERATE)
+        self.config.enable_stream(rs.stream.color, X, Y, rs.format.bgr8, FRAMERATE)
+
+        self.config.enable_record_to_file(FILE)
+
+        # Start streaming
+        self.pipeline.start(self.config)
+
+class Read(myCamera):
+
+    def __init__(self, FILE, X=640, FRAMERATE=30):
+
+        Y = self.aspect_ratio(X)
+
+        # Configure depth and color stream
+        self.pipeline = rs.pipeline()
+        config = rs.config()
+
+        rs.config.enable_device_from_file(config, FILE)
+
+        config.enable_stream(rs.stream.depth, X, Y, rs.format.z16, FRAMERATE)
+        config.enable_stream(rs.stream.color, X, Y, rs.format.bgr8, FRAMERATE)
+
+        # Start streaming
+        self.pipeline.start(config)
+
+if __name__ == "__main__":
+#######################################################################################################################
+################################### \\ THESE IS AN EXAMPLE FOR USED THIS FUNCTION //###################################
+#######################################################################################################################
+
+    ''' This for open or use camera '''
+    cam = Camera(640, 30)
+    while True:
+        cam.initial()
+        if cam.show_result():
+            cam.final()
+            break
+
+    ''' Thia for record to .bag file '''
+    # rec = Record('test.bag', 424, 15)
+    # t = time.time()
+    # while True:
+    #     rec.initial()
+    #     print(time.time())
+    #     if (time.time() - t) >= 5.00:
+    #         rec.final()
+    #         break
+
+    ''' This for read .bsag file '''
+    # red = Read('test.bag', 424, 15)
+    # while True:
+    #     red.initial()
+    #     if red.show_result():
+    #         red.final()
+    #         break
 
