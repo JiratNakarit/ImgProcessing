@@ -5,7 +5,7 @@
     version: 1.07.09
     another: Jirat Nakarit
     Postscript: 1. This code for Real Sense D415.
-                2. Now you can not use record and read at the same time.
+                2. Now you cannot use record and read at the same time.
 '''
 #######################################################################################################################
 
