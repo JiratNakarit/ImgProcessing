@@ -4,37 +4,18 @@ import pyrealsense2 as rs
 
 class myCamera:
 
-    def __init__(self, MODESET=None, STORAGESET=None, P=480, FRAMERATE=30):
-
-        def set_mode(MODE, STORAGE):
-            if MODE == None:
-                pass
-            elif MODE == 'record':
-                config.enable_record_to_file(STORAGE)
-            elif MODE == 'read':
-                config.enable_device_from_file(STORAGE)
+    def __init__(self, X=424, Y=270, FRAMERATE=30):
 
         # Configure depth and color stream
         self.pipeline = rs.pipeline()
-        config = rs.config()
+        self.config = rs.config()
 
-        # Set resolution and frame rate
-        if P == 360:
-            config.enable_stream(rs.stream.depth, 480, 360, rs.format.z16, FRAMERATE)
-            config.enable_stream(rs.stream.color, 480, 360, rs.format.bgr8, FRAMERATE)
-        elif P == 480:
-            config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, FRAMERATE)
-            config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, FRAMERATE)
-        elif P == 720:
-            config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, FRAMERATE)
-            config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, FRAMERATE)
-        else:
-            pass
+        self.config.enable_stream(rs.stream.depth, X, Y, rs.format.z16, FRAMERATE)
+        self.config.enable_stream(rs.stream.color, X, Y ,rs.format.bgr8, FRAMERATE)
 
-        # Set mode
-        set_mode(MODESET, STORAGESET)
+    def start(self):
         # Start streaming
-        self.pipeline.start(config)
+        self.pipeline.start(self.config)
 
     def initial(self):
         # Wait for a coherent pair of frames: depth and color
@@ -62,3 +43,7 @@ class myCamera:
             return True
         else:
             return False
+
+
+
+
